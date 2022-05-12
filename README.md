@@ -1,5 +1,10 @@
 # NgtkState
 
+A little typesafe bycicle to ride across the state management tasks in Angular.
+Use it whenever it is appropriate to avoid using the whole another framework-size layer like NgRx or some React based system.
+
+---
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.5.
 
 ## Development server
