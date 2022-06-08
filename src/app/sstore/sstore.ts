@@ -1,22 +1,26 @@
 import { SState } from './sstate';
 import { Action } from './action';
-import { IAction, ISStore } from './store.types';
+import { ISStore, NotInKeys, TActionMap } from './store.types';
 
-export class SStore<State extends object, Actions extends Record<string, IAction<State, any>> = {}> implements ISStore<State> {
+export class SStore<State extends object, ActionMap extends TActionMap<State> = {}> implements ISStore<State, ActionMap> {
 
   readonly state: SState<State>;
 
-  static create<S extends object, A extends Record<string, IAction<S, any>> = {}>(state: S | SState<S>, actions = {} as A) {
-    return new SStore(state, actions);
-  }
-
-  private constructor(state: State | SState<State>, readonly actions = {} as Actions) {
+  private constructor(state: State | SState<State>, readonly actions = {} as ActionMap) {
     this.state = state instanceof SState ? state : new SState<State>(state);
   }
 
-  readonly addAction = <Payload = null>() => <K extends string>(actionName: K) => {
-    const newAction = new Action<State, Payload>(() => this.state.val, (s) => this.state.next(s));
-    const newActions = { ...this.actions, [actionName]: newAction } as Actions & { [key in K]: Action<State, Payload> };
-    return SStore.create(this.state, newActions);
+  static create<S extends object, A extends TActionMap<S> = {}>(state: S | SState<S>, actions = {} as A) {
+    return new SStore(state, actions);
   }
+
+  readonly addAction = <Payload = null>() => <K extends string>(actionName: NotInKeys<ActionMap, K>) => {
+    const newAction = new Action<State, Payload>(() => this.state.val, this.identityReducer);
+    const newActionMap = {[actionName]: newAction} as { [key in K]: Action<State, Payload> };
+    const newActions = { ...this.actions, ...newActionMap};
+    return SStore.create(this.state, newActions as { [K in keyof typeof newActions]: (typeof newActions)[K] });
+  }
+
+  readonly identityReducer = (s: State) => this.state.next(s);
+
 }

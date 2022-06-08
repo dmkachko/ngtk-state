@@ -1,5 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { SStore } from './sstore/sstore';
+import { SStore } from './sstore/SStore';
+import { FReducer } from './sstore/store.types';
+
+interface IAppState { count: number, message: string }
+
+const InitialState: IAppState = { count: 0, message: '' };
+
+const incReducer: FReducer<IAppState, any> = (s) => ({ ...s, count: s.count + 1, message: 'increased :)' });
+const decReducer: FReducer<IAppState, any> = (s) => ({ ...s, count: s.count - 1, message: 'decreased :(' });
+const messageReducer: FReducer<IAppState, {m: string}> = (s, p) => ({ count:0, message: p.m });
 
 @Component({
   selector: 'app-root',
@@ -7,17 +16,15 @@ import { SStore } from './sstore/sstore';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-
-  store = SStore.create({ count: 0, message: '' })
+  store = SStore.create(InitialState)
     .addAction()('inc')
     .addAction()('dec')
     .addAction<{m: string}>()('addMessage');
 
   ngOnInit(): void {
     const actions = this.store.actions;
-    actions.inc.addReducer((s) => ({ ...s, count: s.count + 1, message: 'increased :)' }));
-    actions.dec.addReducer((s) => ({ ...s, count: s.count - 1, message: 'decreased :(' }));
-    actions.addMessage.addReducer((s, p) => ({ count:0, message: p.m }));
+    actions.inc.addReducer(incReducer);
+    actions.dec.addReducer(decReducer);
+    actions.addMessage.addReducer(messageReducer);
   }
-
 }
