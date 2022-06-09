@@ -26,7 +26,12 @@ export class SSlice<T> {
   }
 }
 
-export class SState<T extends object> extends SSlice<T> {
+export interface IObservableState<T> {
+  val: T;
+  next(s: T):void;
+}
+
+export class SState<T extends object> extends SSlice<T> implements IObservableState<T> {
 
   protected readonly subj$: BehaviorSubject<T>;
 

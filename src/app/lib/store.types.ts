@@ -1,6 +1,5 @@
 import { Action } from './action';
-import { SState } from './sstate';
-import { SStore } from './SStore';
+import { IObservableState, SState } from './sstate';
 
 export interface I<PAYLOAD> {
   dispatch(p: PAYLOAD): void;
@@ -13,13 +12,13 @@ export interface IAction<STATE, PAYLOAD> {
   reduce: FReducer<STATE, PAYLOAD>;
 }
 
-export type TActionMap<State> = Record<string, Action<State, any>>;
+export type TActionMap<State> = Record<string, Action<IObservableState<State>, any>>;
 
 export interface ISStore<State extends object, ActionMap extends TActionMap<State>> {
   readonly state: SState<State>;
   readonly actions: ActionMap;
-  readonly addAction: <Payload>() => <K extends string>(actionName: NotInKeys<ActionMap, K>) =>
-    SStore<State, ActionMap & { [key in K]: Action<State, Payload> }>
+  readonly addAction: <Payload extends object | null>() => <K extends string>(actionName: NotInKeys<ActionMap, K>) =>
+    ISStore<State, ActionMap & { [key in K]: Action<State, Payload> }>
 }
 
 export type NotInKeys<T, S> = S extends keyof T ? never : S;

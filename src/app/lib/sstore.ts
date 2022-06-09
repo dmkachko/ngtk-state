@@ -6,7 +6,7 @@ export class SStore<State extends object, ActionMap extends TActionMap<State> = 
 
   readonly state: SState<State>;
 
-  private constructor(state: State | SState<State>, readonly actions = {} as ActionMap) {
+  constructor(state: State | SState<State>, readonly actions = {} as ActionMap) {
     this.state = state instanceof SState ? state : new SState<State>(state);
   }
 
@@ -14,13 +14,10 @@ export class SStore<State extends object, ActionMap extends TActionMap<State> = 
     return new SStore(state, actions);
   }
 
-  readonly addAction = <Payload = null>() => <K extends string>(actionName: NotInKeys<ActionMap, K>) => {
-    const newAction = new Action<State, Payload>(() => this.state.val, this.identityReducer);
+  readonly addAction = <Payload extends object | null = null>() => <K extends string>(actionName: NotInKeys<ActionMap, K>) => {
+    const newAction = new Action<State, Payload>(this.state, actionName);
     const newActionMap = {[actionName]: newAction} as { [key in K]: Action<State, Payload> };
     const newActions = { ...this.actions, ...newActionMap};
     return SStore.create(this.state, newActions as { [K in keyof typeof newActions]: (typeof newActions)[K] });
   }
-
-  readonly identityReducer = (s: State) => this.state.next(s);
-
 }

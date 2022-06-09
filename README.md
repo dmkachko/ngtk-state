@@ -3,6 +3,24 @@
 A little typesafe bycicle to ride across the state management tasks in Angular.
 Use it whenever it is appropriate to avoid using the whole another framework-size layer like NgRx or some React based system.
 
+
+
+
+
+
+
+
+
+
+
+
+# Todo
+
+* Chaining actions : should be able to run another action on successfully executed one (effect?)
+* Handle exceptions in reducers : should be able to run another action on it or execute an effect
+* Asynchronous actions: a set of actions subsequently running the others on success, failure, complete and ability to cancel
+* Default reset state
+
 ---
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.5.

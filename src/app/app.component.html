@@ -1,14 +1,16 @@
 <h3>
-  runs good
+  Simple Demo
 </h3>
 
-<p *ngIf="store.actions as actions">
+<p *ngIf="appService.actions as actions">
   <button type="text" (click)="actions.inc.dispatch(null)">Inc</button>
   <button type="text" (click)="actions.dec.dispatch(null)">Dec</button>
-  <button type="text" (click)="actions.addMessage.dispatch({m: 'message'})">Message2</button>
+  <button type="text"
+    (click)="actions.addMessage.dispatch({m: 'Message: hello, the counter is ' + appService.store.state.val.count })">Message2
+  </button>
 </p>
 
-<ng-container *ngIf="store.state.val$ | async as state">
+<ng-container *ngIf="appService.state$ | async as state">
 
   <p>
     {{state.message}}
@@ -16,6 +18,10 @@
 
   <p>
     {{state.count}}
+  </p>
+
+  <p style="color:blue">
+    {{state.warning}}
   </p>
 
 </ng-container>
